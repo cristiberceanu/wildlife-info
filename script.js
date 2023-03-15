@@ -7,8 +7,20 @@ async function fetchData() {
     const data = await response.json();
 
     document.getElementById('speciesName').textContent = data.scientificName;
-    document.getElementById('speciesImage').src = data.dataObjects[0].eolMediaURL;
-    document.getElementById('speciesDescription').textContent = data.dataObjects[1].description;
+
+    const imageObject = data.dataObjects.find(obj => obj.dataType === 'http://purl.org/dc/dcmitype/StillImage');
+    if (imageObject) {
+      document.getElementById('speciesImage').src = imageObject.eolMediaURL;
+    } else {
+      document.getElementById('speciesImage').src = '';
+    }
+
+    const textObject = data.dataObjects.find(obj => obj.dataType === 'http://purl.org/dc/dcmitype/Text');
+    if (textObject) {
+      document.getElementById('speciesDescription').textContent = textObject.description;
+    } else {
+      document.getElementById('speciesDescription').textContent = 'No description available.';
+    }
   } catch (error) {
     console.error('Error fetching data:', error);
   }
